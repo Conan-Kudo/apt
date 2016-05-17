@@ -775,7 +775,7 @@ bool HttpMethod::Configuration(string Message)
    int rc;
    scmp_filter_ctx ctx = NULL;
 
-   ctx = seccomp_init(SCMP_ACT_TRAP);
+   ctx = seccomp_init(SCMP_ACT_ERRNO(ENOSYS));
    if (ctx == NULL)
       return _error->FatalE("HttpMethod::Configuration", "Cannot init seccomp");
 
