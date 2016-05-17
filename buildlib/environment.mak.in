@@ -21,6 +21,9 @@ CXXFLAGS+= -Wctor-dtor-privacy -Wdisabled-optimization -Winit-self -Wmissing-inc
 #CXXFLAGS+= -Wpedantic -Wno-long-long -Wno-vla -Wno-variadic-macros
 NUM_PROCS = @NUM_PROCS@
 
+SECCOMP_CFLAGS = @SECCOMP_CFLAGS@
+SECCOMP_LIBS = @SECCOMP_LIBS@
+
 # Linker stuff
 PICFLAGS+= -fPIC -DPIC
 LFLAGS+= @LDFLAGS@

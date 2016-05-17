@@ -48,6 +48,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <seccomp.h>
+
 #include "config.h"
 #include "connect.h"
 #include "http.h"
@@ -769,6 +771,156 @@ bool HttpMethod::Configuration(string Message)
 {
    if (ServerMethod::Configuration(Message) == false)
       return false;
+
+   int rc;
+   scmp_filter_ctx ctx = NULL;
+
+   ctx = seccomp_init(SCMP_ACT_TRAP);
+   if (ctx == NULL)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot init seccomp");
+
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(open), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "open");
+
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(read), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "read");
+
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "write");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ioctl), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "ioctl");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fcntl), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "fcntl");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(lseek), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "lseek");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ftruncate), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "ftruncate");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(utimes), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "utimes");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getdents), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "getdents");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(dup2), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "dup2");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(close), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "close");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(unlink), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "unlink");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(rename), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "unlink");
+
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(brk), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "brk");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mmap), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "mmap");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mprotect), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "mmap");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(munmap), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "munmap");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(pipe), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "pipe");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fork), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "fork");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "clone");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(wait4), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "wait");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(nanosleep), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "nanosleep");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getpid), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "getpid");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(exit_group), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "exit_group");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(set_tid_address), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "set_tid_address");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(set_robust_list), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "set_robust_list");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(rt_sigaction), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "rt_sigaction");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(rt_sigprocmask), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "rt_sigprocmask");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getrlimit), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "getrlimit");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(uname), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "uname");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(socket), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "socket");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(connect), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "connect");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(poll), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "poll");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(select), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "select");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(sendto), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "sendto");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(recvmsg), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "recvmsg");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(recvfrom), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "recvfrom");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(bind), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "bind");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getsockname), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "getsockname");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getsockopt), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "getsockopt");
+
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(stat), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "stat");
+
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(newfstatat), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "statat");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fstat), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "fstat");
+   rc = seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(access), 0);
+   if (rc != 0)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot allow %s", "access");
+
+
+   rc = seccomp_load(ctx);
+   if (rc)
+      return _error->FatalE("HttpMethod::Configuration", "Cannot load context");
 
    AllowRedirect = _config->FindB("Acquire::http::AllowRedirect",true);
    PipelineDepth = _config->FindI("Acquire::http::Pipeline-Depth",

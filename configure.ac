@@ -129,6 +129,8 @@ if test "x$HAVE_LZMA" = "xyes"; then
 	AC_DEFINE(HAVE_LZMA)
 fi
 
+PKG_CHECK_MODULES([SECCOMP], [libseccomp])
+
 dnl Converts the ARCH to be something singular for this general CPU family
 dnl This is often the dpkg architecture string.
 dnl First check against the full canonical canoncial-system-type in $target
