@@ -304,8 +304,8 @@ class pkgAcquire::Item : public WeakPointable				/*{{{*/
     */
    virtual ~Item();
 
+   /** \brief The priority of the item, used for queuing */
    APT_HIDDEN int Priority();
-   APT_HIDDEN int Priority(int value);
 
    protected:
    /** \brief The acquire object with which this item is associated. */

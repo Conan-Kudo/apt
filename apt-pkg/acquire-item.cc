@@ -900,11 +900,6 @@ int pkgAcquire::Item::Priority() 				/*{{{*/
 }
 									/*}}}*/
 
-int pkgAcquire::Item::Priority(int value)				/*{{{*/
-{
-   return 0;
-}
-									/*}}}*/
 pkgAcqTransactionItem::pkgAcqTransactionItem(pkgAcquire * const Owner,	/*{{{*/
       pkgAcqMetaClearSig * const transactionManager, IndexTarget const &target) :
    pkgAcquire::Item(Owner), d(NULL), Target(target), TransactionManager(transactionManager)
