@@ -890,7 +890,13 @@ std::string pkgAcquire::Item::HashSum() const				/*{{{*/
 																		/*}}}*/
 int pkgAcquire::Item::Priority() 				/*{{{*/
 {
-   return 0;
+   if (dynamic_cast<pkgAcqMetaSig*>(this) != nullptr)
+      return 800;
+   if (dynamic_cast<pkgAcqMetaBase*>(this) != nullptr)
+      return 700;
+   if (dynamic_cast<pkgAcqDiffIndex*>(this) != nullptr)
+      return 600;
+   return 500;
 }
 									/*}}}*/
 
