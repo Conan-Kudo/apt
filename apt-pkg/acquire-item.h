@@ -304,6 +304,9 @@ class pkgAcquire::Item : public WeakPointable				/*{{{*/
     */
    virtual ~Item();
 
+   APT_HIDDEN int Priority();
+   APT_HIDDEN int Priority(int value);
+
    protected:
    /** \brief The acquire object with which this item is associated. */
    pkgAcquire * const Owner;

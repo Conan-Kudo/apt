@@ -851,9 +851,10 @@ pkgAcquire::Queue::~Queue()
 /* */
 bool pkgAcquire::Queue::Enqueue(ItemDesc &Item)
 {
+   QItem **OptimalI = &Items;
    QItem **I = &Items;
    // move to the end of the queue and check for duplicates here
-   for (; *I != 0; I = &(*I)->Next)
+   for (; *I != 0; I = &(*I)->Next) {
       if (Item.URI == (*I)->URI)
       {
 	 if (_config->FindB("Debug::pkgAcquire::Worker",false) == true)
@@ -862,12 +863,23 @@ bool pkgAcquire::Queue::Enqueue(ItemDesc &Item)
 	 Item.Owner->Status = (*I)->Owner->Status;
 	 return false;
       }
+      // Determine the optimal position to insert: before anything with a
+      // higher priority.
+      int priority = 0;
+      for (auto const & owner : (*I)->Owners) {
+	 priority = std::max(priority, owner->Priority());
+      }
+      if (priority  <= Item.Owner->Priority()) {
+	 OptimalI = I;
+      }
+   }
+
 
    // Create a new item
    QItem *Itm = new QItem;
    *Itm = Item;
-   Itm->Next = 0;
-   *I = Itm;
+   Itm->Next = ((*OptimalI)->Next);
+   *OptimalI = Itm;
    
    Item.Owner->QueueCounter++;   
    if (Items->Next == 0)
