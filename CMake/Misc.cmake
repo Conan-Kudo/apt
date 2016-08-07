@@ -28,7 +28,9 @@ function(add_vendor_file)
 
     FILE(READ ${CMAKE_CURRENT_SOURCE_DIR}/${AVF_INPUT} input)
     foreach(variable ${AVF_VARIABLES})
-        execute_process(COMMAND ../vendor/getinfo ${variable} OUTPUT_VARIABLE value OUTPUT_STRIP_TRAILING_WHITESPACE)
+        execute_process(COMMAND ${PROJECT_SOURCE_DIR}/vendor/getinfo
+                                    --vendor ${CURRENT_VENDOR} ${variable}
+                        OUTPUT_VARIABLE value OUTPUT_STRIP_TRAILING_WHITESPACE)
         string(REPLACE "&${variable};" "${value}" input "${input}")
     endforeach()
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${AVF_OUTPUT} "${input}")
