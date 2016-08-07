@@ -77,3 +77,11 @@ function(add_version_script target)
     target_link_libraries(${target} PRIVATE -Wl,-version-script="${script}")
     add_dependencies(${target} ${target}-versionscript)
 endfunction()
+
+# Add a dependency to a target, creating the target if neccessary
+function(add_dependencies_maybe_create_target target)
+    if(NOT TARGET ${target})
+        add_custom_target(${target})
+    endif()
+    add_dependencies(${target} ${ARGN})
+endfunction()
