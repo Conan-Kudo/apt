@@ -68,7 +68,9 @@ Git-Dch: Ignore' "$file")" '+%Y-%m-%dT00:00:00Z')"
 	if [ "$(date +%Y-%m-%d)" != "$(grep --max-count=1 '^"POT-Creation-Date: .*\n"$' po/apt-all.pot | cut -d' ' -f 2)" -o \
 	     "$(date +%Y-%m-%d)" != "$(grep --max-count=1 '^"POT-Creation-Date: .*\n"$' doc/po/apt-doc.pot | cut -d' ' -f 2)" ]; then
 		echo >&2 'POT files are not up-to-date. Execute »make update-po« for you…'
-		make update-po
+		[ -e build ] || mkdir build
+		( cd build && cmake .. )
+		cmake --build build --target update-po -- -j 4
 	fi
 elif [ "$1" = 'pre-build' ]; then
 	if [ "$DISTRIBUTION" = "UNRELEASED" ]; then
