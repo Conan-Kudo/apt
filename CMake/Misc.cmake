@@ -85,3 +85,13 @@ function(add_dependencies_maybe_create_target target)
     endif()
     add_dependencies(${target} ${ARGN})
 endfunction()
+
+
+function(path_join out path1 path2)
+    string(SUBSTRING ${path2} 0 1 init_char)
+    if ("${init_char}" STREQUAL "/")
+        set(${out} "${path2}" PARENT_SCOPE)
+    else()
+        set(${out} "${path1}/${path2}" PARENT_SCOPE)
+    endif()
+endfunction()
