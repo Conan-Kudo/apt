@@ -53,7 +53,7 @@ if [ "$1" = 'pre-export' ]; then
 		VERSION="$VERSION~$(date +%Y%m%d)"
 	fi
 
-	sed -i -e "s/^PACKAGE_VERSION=\".*\"$/PACKAGE_VERSION=\"${VERSION}\"/" configure.ac
+	sed -i -e "s/^set(PACKAGE_VERSION \".*\")$/set(PACKAGE_VERSION \"${VERSION}\")/" CMakeLists.txt
 	sed -i -e "s/^<!ENTITY apt-product-version \".*\">$/<!ENTITY apt-product-version \"${VERSION}\">/" doc/apt-verbatim.ent
 
 	# update the last-modification field of manpages based on git changes
@@ -76,9 +76,9 @@ elif [ "$1" = 'pre-build' ]; then
 	if [ "$DISTRIBUTION" = "UNRELEASED" ]; then
 		echo 'BUILDING AN UNRELEASED VERSION'
 	else
-		CONFVERSION="$(sed -ne "s/^PACKAGE_VERSION=\"\(.*\)\"$/\1/p" configure.ac)"
+		CONFVERSION="$(sed -ne "s/^set(PACKAGE_VERSION \"\(.*\)\")$/\1/p" CMakeLists.txt)"
 		if [ "$VERSION" != "$CONFVERSION" ]; then
-			echo "changelog (${VERSION}) and configure (${CONFVERSION}) talk about different versions!"
+			echo "changelog (${VERSION}) and CMakeLists.txt (${CONFVERSION}) talk about different versions!"
 			echo "You probably want to run »./prepare-release pre-export« to fix this."
 			exit 1
 		fi
