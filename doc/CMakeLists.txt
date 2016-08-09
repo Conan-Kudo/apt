@@ -38,6 +38,26 @@ add_docbook(libapt-pkg-doc HTML TEXT ALL
     LINGUAS ${LINGUAS}
     DEPENDS ${ENTITIES}
 )
+
+find_package(Doxygen)
+
+file(GLOB_RECURSE apt_pkg "../apt-pkg/*.h" "../apt-pkg/*.cc")
+configure_file(Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/doxygen.stamp
+    COMMAND doxygen ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+    COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/doxygen.stamp
+    DEPENDS ${apt_pkg} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+)
+
+add_custom_target(apt-doxygen ALL
+    DEPENDS ${PROJECT_BINARY_DIR}/doc/doxygen.stamp
+)
+
+install(DIRECTORY  ${PROJECT_BINARY_DIR}/doc/doxygen/html
+        DESTINATION ${CMAKE_INSTALL_DOCDIR}/../libapt-pkg-doc)
+
 endif()
 
 add_docbook(apt-man MANPAGE ALL
