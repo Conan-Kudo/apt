@@ -117,9 +117,11 @@ elif [ "$1" = 'post-build' ]; then
 		fi
 	done
 	# lets assume we will always have a german manpage translation
-	if [ -e 'doc/de/' ]; then
+	if [ -e */doc/de/ -o -e doc/de ]; then
 		# … but check the translations only with one vendor for translation-specific errors
-		if ! xmllint --nonet --valid --noout $(find doc/ -mindepth 2 -maxdepth 2 -name '*.xml'); then
+		if ! xmllint  --path /vendor/$(./vendor/getinfo current)/ \
+					  --path doc/ \
+					--nonet --valid --noout $(find doc/ */doc/ -mindepth 2 -maxdepth 2 -name '*.xml'); then
 			echo >&2 "WARNING: translated docbook manpages have errors!"
 		fi
 	else
